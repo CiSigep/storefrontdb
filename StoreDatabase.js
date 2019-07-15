@@ -16,6 +16,14 @@ var StoreDatabase = function() {
         });
     }
 
+    this.updateProductAmount = function(item, callback) {
+        this.connection.query("UPDATE products SET stock_quantity = ? WHERE item_id = ?", [item.stock_quantity, item.item_id], err => {
+            if(err) throw err;
+
+            callback();
+        });
+    }
+
     this.close = function() {this.connection.end();}
 
 }
