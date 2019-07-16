@@ -1,6 +1,6 @@
 var StoreDatabase = require("./StoreDatabase");
 var inquirer = require("inquirer");
-var Table = require("easy-table");
+var Table = require("cli-table");
 
 var storeDB = new StoreDatabase();
 var items;
@@ -62,17 +62,14 @@ function askContinueShopping() {
 }
 
 storeDB.getAllProducts(res => {
-    var table = new Table();
+    var table = new Table({
+        head: ["Product ID", "Name", "Department", "Price", "Stock"]
+    });
     items = res;
 
     res.forEach(element => {
+        table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
         ids.push(element.item_id);
-        table.cell("Product ID", element.item_id);
-        table.cell("Name", element.product_name);
-        table.cell("Department", element.department_name);
-        table.cell("Price", element.price.toFixed(2));
-        table.cell("Stock", element.stock_quantity);
-        table.newRow();
     });
 
     console.log(table.toString());
