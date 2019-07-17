@@ -11,10 +11,13 @@ function menu() {
         choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"],
         name: "choice"
     }]).then(res => {
-        switch(res.choice){
+        switch (res.choice) {
             case "View Products for Sale":
-                viewProducts();
-            break;
+                storeDB.getAllProducts(resultsView);
+                break;
+            case "View Low Inventory":
+                storeDB.getProductsStockLessThan(5, resultsView);
+                break;
         }
     });
 }
@@ -28,7 +31,7 @@ function askContinue() {
             name: "choice"
         }
     ]).then(ans => {
-        if(ans.choice === "Yes")
+        if (ans.choice === "Yes")
             menu();
         else {
             storeDB.close();
@@ -36,19 +39,17 @@ function askContinue() {
     });
 }
 
-function viewProducts(){
-    storeDB.getAllProducts(res => {
-        var table = new Table({
-            head: ["Product ID", "Name", "Department", "Price", "Stock"]
-        });
-    
-        res.forEach(element => {
-            table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
-        });
-    
-        console.log(table.toString());
-        askContinue();
+var resultsView = res => {
+    var table = new Table({
+        head: ["Product ID", "Name", "Department", "Price", "Stock"]
     });
-}
+
+    res.forEach(element => {
+        table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
+    });
+
+    console.log(table.toString());
+    askContinue();
+};
 
 menu();

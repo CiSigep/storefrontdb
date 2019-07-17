@@ -18,8 +18,8 @@ function shop() {
         {
             message: "How much would you like?",
             name: "amount",
-            validate: function(input) {
-                if(!Number.isInteger(++input))
+            validate: function (input) {
+                if (!Number.isInteger(++input))
                     return "Your input must be an integer value."
 
                 return true;
@@ -33,13 +33,13 @@ function shop() {
 function attemptPurchase(id, amount) {
     storeDB.getProductByID(id, item => {
 
-        if(item.stock_quantity < amount){
+        if (item.stock_quantity < amount) {
             console.log("Insufficient Quantity!");
             askContinueShopping();
         }
         else {
             item.stock_quantity -= amount;
-            storeDB.updateProductAmount(item, function() {
+            storeDB.updateProductAmount(item, function () {
                 var purchaseTotal = item.price * amount;
                 total += purchaseTotal;
                 console.log("Your total for this purchase is: " + purchaseTotal.toFixed(2));
@@ -58,7 +58,7 @@ function askContinueShopping() {
             name: "choice"
         }
     ]).then(ans => {
-        if(ans.choice === "Yes")
+        if (ans.choice === "Yes")
             shop();
         else {
             storeDB.close();
