@@ -5,6 +5,7 @@ var Table = require("cli-table");
 var storeDB = new StoreDatabase();
 var items;
 var ids = [];
+var total = 0;
 
 function shop() {
     inquirer.prompt([
@@ -30,19 +31,22 @@ function shop() {
 }
 
 function attemptPurchase(id, amount) {
-    var item = items.find(ele => {return id === ele.item_id});
+    storeDB.getProductByID(id, item => {
 
-    if(item.stock_quantity < amount){
-        console.log("Insufficient Quantity!");
-        askContinueShopping();
-    }
-    else {
-        item.stock_quantity -= amount;
-        storeDB.updateProductAmount(item, function() {
-            console.log("Your total for this purchase is: " + (item.price * amount).toFixed(2));
+        if(item.stock_quantity < amount){
+            console.log("Insufficient Quantity!");
             askContinueShopping();
-        });
-    }
+        }
+        else {
+            item.stock_quantity -= amount;
+            storeDB.updateProductAmount(item, function() {
+                var purchaseTotal = item.price * amount;
+                total += purchaseTotal;
+                console.log("Your total for this purchase is: " + purchaseTotal.toFixed(2));
+                askContinueShopping();
+            });
+        }
+    });
 }
 
 function askContinueShopping() {
@@ -56,8 +60,10 @@ function askContinueShopping() {
     ]).then(ans => {
         if(ans.choice === "Yes")
             shop();
-        else
+        else {
             storeDB.close();
+            console.log("Your total for this session is: " + total.toFixed(2));
+        }
     })
 }
 
