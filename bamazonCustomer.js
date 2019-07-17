@@ -26,7 +26,7 @@ function shop() {
             }
         }
     ]).then(ans => {
-        attemptPurchase(ans.choice, ans.amount);
+        attemptPurchase(parseInt(ans.choice.split(" ")[0]), ans.amount);
     });
 }
 
@@ -75,7 +75,7 @@ storeDB.getAllProducts(res => {
 
     res.forEach(element => {
         table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
-        ids.push(element.item_id);
+        ids.push(element.item_id + " " + element.product_name);
     });
 
     console.log(table.toString());

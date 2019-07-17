@@ -18,8 +18,46 @@ function menu() {
             case "View Low Inventory":
                 storeDB.getProductsStockLessThan(5, resultsView);
                 break;
+            case "Add to Inventory":
+                addToInventory();
+                break;
         }
     });
+}
+
+function addToInventory() {
+    var products = [];
+    storeDB.getAllProducts(res => {
+        res.forEach(element => {
+            products.push(element.item_id + " " + element.product_name);
+        });
+
+        inquirer.prompt([{
+            message: "Which item do you want to add inventory for?",
+            type: "list",
+            choices: products,
+            name: "choice"
+        },
+        {
+            message: "How much do you want to add?",
+            name: "amount",
+            validate: function (input) {
+                if (!Number.isInteger(++input))
+                    return "Your input must be an integer value."
+
+                return true;
+            }
+        }
+        ]).then(ans => {
+            storeDB.getProductByID(parseInt(ans.choice.split(" ")[0]), result => {
+                result.stock_quantity += parseInt(ans.amount);
+                storeDB.updateProductAmount(result, ret => {
+                    console.log("Amount Successfully Added.");
+                    askContinue();
+                });
+            });
+        });
+    })
 }
 
 function askContinue() {
@@ -51,5 +89,9 @@ var resultsView = res => {
     console.log(table.toString());
     askContinue();
 };
-
-menu();
+try{
+    menu();
+} catch(e){
+    console.error(e);
+    storeDB.close();
+}
