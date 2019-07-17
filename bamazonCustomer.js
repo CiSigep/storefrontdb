@@ -64,7 +64,7 @@ function askContinueShopping() {
             storeDB.close();
             console.log("Your total for this session is: " + total.toFixed(2));
         }
-    })
+    });
 }
 
 storeDB.getAllProducts(res => {
