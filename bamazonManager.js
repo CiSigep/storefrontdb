@@ -21,6 +21,9 @@ function menu() {
             case "Add to Inventory":
                 addToInventory();
                 break;
+            case "Add New Product":
+                addNewProduct();
+                break;
         }
     });
 }
@@ -60,6 +63,50 @@ function addToInventory() {
     })
 }
 
+function addNewProduct() {
+    inquirer.prompt([{
+        message: "Enter the Product name: ",
+        name: "product_name"
+    },
+    {
+        message: "Enter the Department name: ",
+        name: "department_name"
+    },
+    {
+        message: "Enter the price: ",
+        validate: function (input) {
+            if (isNaN(input))
+                return "Input must be a number.";
+
+            return true;
+        },
+        name: "price"
+    },
+    {
+        message: "Enter the quantity: ",
+        validate: function (input) {
+            if (!Number.isInteger(++input))
+                return "Your input must be an integer value."
+
+            return true;
+        },
+        name: "stock_quantity"
+    }]).then(ans => {
+        storeDB.getProductByNameAndDepartment(ans.product_name, ans.department_name, res => {
+            if(res){
+                console.log("Product already exists in that department.");
+                askContinue();
+                return;
+            }
+
+            storeDB.addNewProduct(ans, function() {
+                console.log("Product added.");
+                askContinue();
+            })
+        });
+    })
+}
+
 function askContinue() {
     inquirer.prompt([
         {
@@ -89,9 +136,9 @@ var resultsView = res => {
     console.log(table.toString());
     askContinue();
 };
-try{
+try {
     menu();
-} catch(e){
+} catch (e) {
     console.error(e);
     storeDB.close();
 }

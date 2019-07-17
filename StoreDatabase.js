@@ -24,12 +24,28 @@ var StoreDatabase = function () {
         });
     }
 
+    this.getProductByNameAndDepartment = function(name, department, callback) {
+        this.connection.query("SELECT * FROM products WHERE product_name = ? AND department_name = ?", [name, department], (err, res) => {
+            if (err) throw err;
+
+            callback(res[0]);
+        });
+    }
+
     this.getProductsStockLessThan = function (value, callback) {
         this.connection.query("SELECT * FROM products WHERE stock_quantity < ?", [value], (err, res) => {
             if (err) throw err;
 
             callback(res);
-        })
+        });
+    }
+
+    this.addNewProduct = function(product, callback) {
+        this.connection.query("INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES (?,?,?,?)", [product.product_name, product.department_name, product.price, product.stock_quantity], err => {
+            if(err) throw err;
+
+            callback();
+        });
     }
 
     this.updateProductAmount = function (item, callback) {
