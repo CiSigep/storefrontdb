@@ -1,6 +1,8 @@
 var mysql = require("mysql");
 var DBConfig = require("./DBConfig");
 
+var SELECT_PRODUCT_QUERY_BASE = "SELECT item_id, product_name, department_name, price, stock_quantity, product_sales FROM products LEFT JOIN departments ON products.department_id = departments.department_id";
+
 var StoreDatabase = function () {
     this.connection = mysql.createConnection(DBConfig.getConfig());
 
@@ -9,7 +11,7 @@ var StoreDatabase = function () {
     });
 
     this.getAllProducts = function (callback) {
-        this.connection.query("SELECT * FROM products", (err, res) => {
+        this.connection.query(SELECT_PRODUCT_QUERY_BASE, (err, res) => {
             if (err) throw err;
 
             callback(res);
@@ -17,7 +19,7 @@ var StoreDatabase = function () {
     }
 
     this.getProductByID = function (id, callback) {
-        this.connection.query("SELECT * FROM products WHERE ?", { item_id: id }, (err, res) => {
+        this.connection.query(SELECT_PRODUCT_QUERY_BASE + " WHERE ?", { item_id: id }, (err, res) => {
             if (err) throw err;
 
             callback(res[0]);
@@ -25,7 +27,7 @@ var StoreDatabase = function () {
     }
 
     this.getProductByNameAndDepartment = function(name, department, callback) {
-        this.connection.query("SELECT * FROM products WHERE product_name = ? AND department_name = ?", [name, department], (err, res) => {
+        this.connection.query(SELECT_PRODUCT_QUERY_BASE + " WHERE product_name = ? AND department_name = ?", [name, department], (err, res) => {
             if (err) throw err;
 
             callback(res[0]);
@@ -33,7 +35,7 @@ var StoreDatabase = function () {
     }
 
     this.getProductsStockLessThan = function (value, callback) {
-        this.connection.query("SELECT * FROM products WHERE stock_quantity < ?", [value], (err, res) => {
+        this.connection.query(SELECT_PRODUCT_QUERY_BASE + " WHERE stock_quantity < ?", [value], (err, res) => {
             if (err) throw err;
 
             callback(res);
@@ -41,18 +43,26 @@ var StoreDatabase = function () {
     }
 
     this.addNewProduct = function(product, callback) {
-        this.connection.query("INSERT INTO products(product_name, department_name, price, stock_quantity) VALUES (?,?,?,?)", [product.product_name, product.department_name, product.price, product.stock_quantity], err => {
+        this.connection.query("INSERT INTO products(product_name, department_id, price, stock_quantity) VALUES (?,?,?,?)", [product.product_name, product.department_id, product.price, product.stock_quantity], err => {
             if(err) throw err;
 
             callback();
         });
     }
 
-    this.updateProductAmount = function (item, callback) {
-        this.connection.query("UPDATE products SET stock_quantity = ? WHERE item_id = ?", [item.stock_quantity, item.item_id], err => {
+    this.updateProduct = function (item, callback) {
+        this.connection.query("UPDATE products SET stock_quantity = ?, product_sales = ? WHERE item_id = ?", [item.stock_quantity, item.product_sales, item.item_id], err => {
             if (err) throw err;
 
             callback();
+        });
+    }
+
+    this.getDepartmentByName = function(name, callback) {
+        this.connection.query("SELECT * FROM departments WHERE ?", { department_name: name }, (err, res) => {
+            if (err) throw err;
+
+            callback(res[0]);
         });
     }
 

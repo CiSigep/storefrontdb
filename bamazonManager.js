@@ -54,7 +54,7 @@ function addToInventory() {
         ]).then(ans => {
             storeDB.getProductByID(parseInt(ans.choice.split(" ")[0]), result => {
                 result.stock_quantity += parseInt(ans.amount);
-                storeDB.updateProductAmount(result, ret => {
+                storeDB.updateProduct(result, ret => {
                     console.log("Amount Successfully Added.");
                     askContinue();
                 });
@@ -92,6 +92,7 @@ function addNewProduct() {
         },
         name: "stock_quantity"
     }]).then(ans => {
+        
         storeDB.getProductByNameAndDepartment(ans.product_name, ans.department_name, res => {
             if(res){
                 console.log("Product already exists in that department.");
@@ -99,10 +100,13 @@ function addNewProduct() {
                 return;
             }
 
-            storeDB.addNewProduct(ans, function() {
-                console.log("Product added.");
-                askContinue();
-            })
+            storeDB.getDepartmentByName(ans.department_name, results => {
+                ans.department_id = results.department_id;
+                storeDB.addNewProduct(ans, function() {
+                    console.log("Product added.");
+                    askContinue();
+                });
+            });
         });
     })
 }

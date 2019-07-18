@@ -38,9 +38,10 @@ function attemptPurchase(id, amount) {
             askContinueShopping();
         }
         else {
+            var purchaseTotal = item.price * amount;
             item.stock_quantity -= amount;
-            storeDB.updateProductAmount(item, function () {
-                var purchaseTotal = item.price * amount;
+            item.product_sales += purchaseTotal;
+            storeDB.updateProduct(item, function () {
                 total += purchaseTotal;
                 console.log("Your total for this purchase is: " + purchaseTotal.toFixed(2));
                 askContinueShopping();
