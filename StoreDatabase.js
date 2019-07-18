@@ -67,7 +67,7 @@ var StoreDatabase = function () {
     }
     
     this.getProductSales = function(callback) {
-        this.connection.query("SELECT departments.department_id, department_name, SUM(IFNULL(products.product_sales, 0)) AS product_sales, over_head_costs, (IFNULL(products.product_sales, 0) - over_head_costs) AS total_profit " +
+        this.connection.query("SELECT departments.department_id, department_name, SUM(IFNULL(products.product_sales, 0)) AS product_sales, over_head_costs, (SUM(IFNULL(products.product_sales, 0)) - over_head_costs) AS total_profit " +
         "FROM departments LEFT JOIN products ON departments.department_id = products.department_id GROUP BY departments.department_id", (err, res) => {
             if(err) throw err;
 
