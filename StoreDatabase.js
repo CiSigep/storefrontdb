@@ -65,6 +65,23 @@ var StoreDatabase = function () {
             callback(res[0]);
         });
     }
+    
+    this.getProductSales = function(callback) {
+        this.connection.query("SELECT departments.department_id, department_name, SUM(IFNULL(products.product_sales, 0)) AS product_sales, over_head_costs, (IFNULL(products.product_sales, 0) - over_head_costs) AS total_profit " +
+        "FROM departments LEFT JOIN products ON departments.department_id = products.department_id GROUP BY departments.department_id", (err, res) => {
+            if(err) throw err;
+
+            callback(res);
+        });
+    };
+
+    this.createDepartment = function(department, callback) {
+        this.connection.query("INSERT INTO departments(department_name, over_head_costs) VALUES (?,?)", [department.department_name, department.over_head_costs], err => {
+            if(err) throw err;
+
+            callback();
+        });
+    };
 
     this.close = function () { this.connection.end(); }
 
