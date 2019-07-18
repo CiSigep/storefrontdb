@@ -101,11 +101,17 @@ function addNewProduct() {
             }
 
             storeDB.getDepartmentByName(ans.department_name, results => {
-                ans.department_id = results.department_id;
-                storeDB.addNewProduct(ans, function() {
-                    console.log("Product added.");
+                if(results){
+                    ans.department_id = results.department_id;
+                    storeDB.addNewProduct(ans, function() {
+                        console.log("Product added.");
+                        askContinue();
+                    });
+                }
+                else {
+                    console.log("Department doesn't exist.");
                     askContinue();
-                });
+                }
             });
         });
     })
