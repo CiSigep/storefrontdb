@@ -45,13 +45,15 @@ function addToInventory() {
             message: "How much do you want to add?",
             name: "amount",
             validate: function (input) {
-                if (!Number.isInteger(++input))
-                    return "Your input must be an integer value."
+                var intVal = parseInt(input);
+                if (!Number.isInteger(intVal) || intVal < 0)
+                    return "Your input must be a postive integer value."
 
                 return true;
             }
         }
         ]).then(ans => {
+            // Add product quantity
             storeDB.getProductByID(parseInt(ans.choice.split(" ")[0]), result => {
                 result.stock_quantity += parseInt(ans.amount);
                 storeDB.updateProduct(result, ret => {
@@ -75,8 +77,8 @@ function addNewProduct() {
     {
         message: "Enter the price: ",
         validate: function (input) {
-            if (isNaN(input))
-                return "Input must be a number.";
+            if (isNaN(input) || parseFloat(input) < 0)
+                return "Input must be a positive number.";
 
             return true;
         },
@@ -85,14 +87,16 @@ function addNewProduct() {
     {
         message: "Enter the quantity: ",
         validate: function (input) {
-            if (!Number.isInteger(++input))
-                return "Your input must be an integer value."
+            var intVal = parseInt(input);
+            if (!Number.isInteger(intVal) || intVal < 0)
+                return "Your input must be a postive integer value."
 
             return true;
         },
         name: "stock_quantity"
     }]).then(ans => {
         
+        // Check if a product exists in that department
         storeDB.getProductByNameAndDepartment(ans.product_name, ans.department_name, res => {
             if(res){
                 console.log("Product already exists in that department.");
@@ -100,6 +104,7 @@ function addNewProduct() {
                 return;
             }
 
+            // Get the department we want to add to
             storeDB.getDepartmentByName(ans.department_name, results => {
                 if(results){
                     ans.department_id = results.department_id;
@@ -134,6 +139,7 @@ function askContinue() {
     });
 }
 
+// Results view function for item display.
 var resultsView = res => {
     var table = new Table({
         head: ["Product ID", "Name", "Department", "Price", "Stock"]
@@ -146,9 +152,5 @@ var resultsView = res => {
     console.log(table.toString());
     askContinue();
 };
-try {
-    menu();
-} catch (e) {
-    console.error(e);
-    storeDB.close();
-}
+
+menu();

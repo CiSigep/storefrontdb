@@ -33,6 +33,7 @@ function askContinue(){
 }
 
 function viewProductSales(){
+    // Get department sales figures and display them to the user
     storeDB.getProductSales(res => {
         var table = new Table({
             head: ["Department ID", "Department Name", "Overhead Costs", "Product Sales", "Total Profit"]
@@ -48,6 +49,7 @@ function viewProductSales(){
 }
 
 function createDepartment(){
+    // Ask user for the new department information
     inquirer.prompt([{
         message: "Enter the department's name: ",
         name: "department_name"
@@ -56,8 +58,8 @@ function createDepartment(){
         message: "Enter the overhead costs for the department: ",
         name: "over_head_costs",
         validate: function (input) {
-            if (isNaN(input))
-                return "Input must be a number.";
+            if (isNaN(input) || parseFloat(input) < 0)
+                return "Input must be a positive number.";
 
             return true;
         }

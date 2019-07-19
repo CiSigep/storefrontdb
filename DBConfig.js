@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+// Create a database config object from a file
 var DBConfig =  {
     getConfig : function(){
         return {
