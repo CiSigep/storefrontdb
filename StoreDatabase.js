@@ -7,11 +7,15 @@ var SELECT_PRODUCT_QUERY_BASE = "SELECT item_id, product_name, department_name, 
 var StoreDatabase = function () {
     this.connection = mysql.createConnection(DBConfig.getConfig());
 
-    // Create our connection
-    this.connection.connect(err => {
-        if (err) throw err;
-    });
+    this.connect = function(callback){
+        // Create our connection
+        this.connection.connect(err => {
+            if (err) throw err;
 
+            callback();
+        });
+    }
+    
     // Gets all the products found in the database.
     this.getAllProducts = function (callback) {
         this.connection.query(SELECT_PRODUCT_QUERY_BASE, (err, res) => {

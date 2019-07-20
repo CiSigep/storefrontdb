@@ -71,4 +71,4 @@ function createDepartment(){
     });
 }
 
-menu();
+storeDB.connect(menu);

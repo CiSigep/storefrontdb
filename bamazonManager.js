@@ -46,9 +46,9 @@ function addToInventory() {
             name: "amount",
             validate: function (input) {
                 var intVal = parseInt(input);
-                if (!Number.isInteger(intVal) || intVal < 0)
+                if (!Number.isInteger(+input) || intVal < 0)
                     return "Your input must be a postive integer value."
-
+    
                 return true;
             }
         }
@@ -88,7 +88,7 @@ function addNewProduct() {
         message: "Enter the quantity: ",
         validate: function (input) {
             var intVal = parseInt(input);
-            if (!Number.isInteger(intVal) || intVal < 0)
+            if (!Number.isInteger(+input) || intVal < 0)
                 return "Your input must be a postive integer value."
 
             return true;
@@ -153,4 +153,4 @@ var resultsView = res => {
     askContinue();
 };
 
-menu();
+storeDB.connect(menu);

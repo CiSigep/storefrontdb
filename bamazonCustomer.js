@@ -20,7 +20,7 @@ function shop() {
             name: "amount",
             validate: function (input) {
                 var intVal = parseInt(input);
-                if (!Number.isInteger(intVal) || intVal < 0)
+                if (!Number.isInteger(+input) || intVal < 0)
                     return "Your input must be a postive integer value."
 
                 return true;
@@ -71,21 +71,22 @@ function askContinueShopping() {
     });
 }
 
-// Get all of our products
-storeDB.getAllProducts(res => {
-    // Set up a table for displaying the elements
-    var table = new Table({
-        head: ["Product ID", "Name", "Department", "Price", "Stock"]
-    });
-    items = res;
+storeDB.connect(function(){
+    // Get all of our products
+    storeDB.getAllProducts(res => {
+        // Set up a table for displaying the elements
+        var table = new Table({
+            head: ["Product ID", "Name", "Department", "Price", "Stock"]
+        });
+        items = res;
 
-    // Add each element to the table.
-    res.forEach(element => {
-        table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
-        ids.push(element.item_id + " " + element.product_name);
-    });
+        // Add each element to the table.
+        res.forEach(element => {
+            table.push([element.item_id, element.product_name, element.department_name, element.price.toFixed(2), element.stock_quantity]);
+            ids.push(element.item_id + " " + element.product_name);
+        });
 
-    console.log(table.toString());
-    shop();
+        console.log(table.toString());
+        shop();
+    });
 });
-
